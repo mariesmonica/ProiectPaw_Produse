@@ -1,4 +1,4 @@
-package com.example.proiectpaw_produse.model;
+package com.example.proiectpaw_produse.modelDTO;
 
 
 public class UserDTO {

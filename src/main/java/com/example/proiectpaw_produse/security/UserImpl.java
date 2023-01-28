@@ -1,6 +1,5 @@
-package edu.example.demospring.security;
+package com.example.proiectpaw_produse.security;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -11,13 +10,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author : colacristian on 11/13/22
- **/
+
 public class UserImpl implements UserDetails {
 
     private String username;
-
 
     private String password;
 

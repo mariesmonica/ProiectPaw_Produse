@@ -5,6 +5,10 @@ import {Link, withRouter} from 'react-router-dom';
 import axios from "axios";
 import authHeader from "./services/auth-header";
 
+const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNjc0OTAxNjI1LCJleHAiOjE2NzQ5ODgwMjV9.xWf_rBIqO8W96C6WxLe-tD1N5t3gyAFo0NVsI-PsAgJ2Wb00AJ63FuiHNUUtSMbr_onBlGZSMgzQkWfXv5fZQQ';
+
+
+
 class ProductList extends Component {
     constructor(props) {
         super(props);
@@ -13,7 +17,7 @@ class ProductList extends Component {
     }
 
     componentDidMount() {
-        axios.get("/products", {headers: authHeader()})
+        axios.get("/products-view", {headers: authHeader()})
             .then(response => {
                 this.setState({products: response.data});
             }).catch(error => {
@@ -39,11 +43,12 @@ class ProductList extends Component {
 
 
     async remove(id) {
-        await fetch(`/products/${id}`, {
+        await fetch(`/product-delete/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `${token}`
             }
         }).then(() => {
             let updateProducts = [...this.state.products].filter(i => i.id !== id);
@@ -64,7 +69,7 @@ class ProductList extends Component {
                 <td style= {{whiteSpace: 'nowrap'}}>{product.details}</td>
                 <td>
                     <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link} to={"/products/" + product.id}>Edit</Button>
+                        <Button size="sm" color="primary" tag={Link} to={"/product-update/" + product.id}>Edit</Button>
                         <Button size="sm" color="danger" onClick={() => this.remove(product.id)}>Delete</Button>
                     </ButtonGroup>
                 </td>
@@ -77,6 +82,9 @@ class ProductList extends Component {
                 <AppNavbar/>
                 <Container fluid>
                     <h3><center>Products</center></h3>
+                    <center>
+                        <Link className="btn btn-outline-primary mx-2" to = "/product-add"><center>Add Products</center></Link>
+                    </center>
                     <Table className="mt-4">
                         <thead>
                         <tr>

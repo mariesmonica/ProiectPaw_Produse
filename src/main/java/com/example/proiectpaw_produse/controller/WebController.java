@@ -1,4 +1,4 @@
-package edu.example.demospring.controller;
+package com.example.proiectpaw_produse.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

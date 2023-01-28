@@ -1,4 +1,4 @@
-package edu.example.demospring.service;
+package com.example.proiectpaw_produse.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -38,9 +38,9 @@ class App extends Component {
                 <Switch>
                     <Route path='/' exact={true}><Home/></Route>
                     <Route path='/my_login'><Login/></Route>
-                    <Route path='/products' exact={true}><ProductList/></Route>
-                    <Route path='/products/:id'><ProductEdit/></Route>
-                    <Route path='/products' exact={true}><ProductAdd/></Route>
+                    <Route path='/products-view' exact={true}><ProductList/></Route>
+                    <Route path='/product-update/:id'><ProductEdit/></Route>
+                    <Route path='/product-add' exact={true}><ProductAdd/></Route>
                 </Switch>
             </Router>
         )

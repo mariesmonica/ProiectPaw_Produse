@@ -1,15 +1,18 @@
-package edu.example.demospring.service;
+package com.example.proiectpaw_produse.service;
 
-import edu.example.demospring.dao.ProductServiceDAO;
-import edu.example.demospring.exception.ProductNotFoundException;
-import edu.example.demospring.model.ProductDTO;
-import edu.example.demospring.persitence.Product;
-import edu.example.demospring.repository.ProductRepository;
+import com.example.proiectpaw_produse.dao.ProductServiceDAO;
+import com.example.proiectpaw_produse.kafka.constants.KafkaConstants;
+import com.example.proiectpaw_produse.kafka.model.KafkaModel;
+import com.example.proiectpaw_produse.modelDTO.ProductDTO;
+import com.example.proiectpaw_produse.modelView.Product;
+import com.example.proiectpaw_produse.repository.ProductRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -19,6 +22,10 @@ import java.util.stream.Collectors;
 @CrossOrigin("http://localhost:3000")
 public class ProductServiceController {
     private static Map<Long, ProductDTO> productsMap = new HashMap<>();
+
+    @Autowired
+
+    private KafkaTemplate<String, KafkaModel> kafkaTemplate;
 
 
     final ProductRepository productRepository;
@@ -31,12 +38,12 @@ public class ProductServiceController {
         this.productServiceDAO = productServiceDAO;
     }
 
-    @RequestMapping(value = "/products")
+    @RequestMapping(value = "/products-view")//preia toate produsele
     public ResponseEntity<Object> getProducts() {
         return new ResponseEntity<>(productRepository.findAll().stream().map(o -> new ProductDTO(o.getId(), o.getName(), o.getPrice(), o.getDetails())).collect(Collectors.toList()), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/products", method = RequestMethod.POST)
+    @RequestMapping(value = "/product-add", method = RequestMethod.POST)//adauga un produs
     public ResponseEntity<Object> createProduct(@RequestBody ProductDTO productDTO) {
         productsMap.put(productDTO.getId(), productDTO);
         Product product = new Product();
@@ -44,16 +51,18 @@ public class ProductServiceController {
         product.setPrice(productDTO.getPrice());
         product.setDetails(productDTO.getDetails());
         productRepository.save(product);
+
+
         return new ResponseEntity<>("Product created", HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/products/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/product-view/{id}", method = RequestMethod.GET)//vizualizeaza produsul dupa id
     public ResponseEntity<Object> getProduct(@PathVariable("id") Long id) {
         return new ResponseEntity<>(productRepository.findById(id).map(p ->
                 new ProductDTO(p.getId(), p.getName(), p.getPrice(), p.getDetails())).orElseThrow(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/products/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/product-update/{id}", method = RequestMethod.PUT)//actualizeaza un produs dupa id
     public ResponseEntity<Object> updateProduct(@PathVariable("id") Long id, @RequestBody ProductDTO productDTO) {
         productRepository.findById(id).ifPresent(p -> {
             p.setName(productDTO.getName());
@@ -63,30 +72,24 @@ public class ProductServiceController {
         });
         productsMap.remove(id);
         productsMap.put(id, productDTO);
+
+        var model = new KafkaModel(id,productDTO.getName());
+        kafkaTemplate.send(KafkaConstants.KAFKA_TOPIC, model);
+
         return new ResponseEntity<>("Product updated", HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/products/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/product-delete/{id}", method = RequestMethod.DELETE)//sterge un produs dupa id
     public ResponseEntity<Object> deleteProduct(@PathVariable("id") Long id) {
         ProductDTO remove = productsMap.remove(id);
         productRepository.deleteById(id);
         return new ResponseEntity<>(Optional.ofNullable(remove).map(p -> "Product deleted").orElse("Product not found"), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/bulk_create")
-    public String bulkCreate() {
-        productRepository.saveAll(Arrays.asList(new Product("Mere","9","rosii"), new Product("Pere","3","galbene")));
-        return "Products created";
-    }
-
-//    @PutMapping("/add-products/")
-//    Product updateProduct(@RequestBody Product newProduct, @PathVariable Long id) {
-//        return productRepository.findById(id)
-//                .map(product -> {
-//                    product.setName(newProduct.getName());
-//                    return productRepository.save(product);
-//                }).orElseThrow(() -> new ProductNotFoundException(id));
-//
+//    @GetMapping(value = "/bulk_create")
+//    public String bulkCreate() {
+//        productRepository.saveAll(Arrays.asList(new Product("Mere","9","rosii"), new Product("Pere","3","galbene")));
+//        return "Products created";
 //    }
 
 }

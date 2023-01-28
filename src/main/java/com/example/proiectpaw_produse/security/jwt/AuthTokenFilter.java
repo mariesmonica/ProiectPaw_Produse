@@ -1,7 +1,8 @@
-package edu.example.demospring.security.jwt;
+package com.example.proiectpaw_produse.security.jwt;
 
-import edu.example.demospring.security.CustomUserDetailsService;
-import edu.example.demospring.security.jwt.utils.Utils;
+import com.example.proiectpaw_produse.security.CustomUserDetailsService;
+import com.example.proiectpaw_produse.security.jwt.utils.Utils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +29,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     public AuthTokenFilter(CustomUserDetailsService customUserDetailsService) {
         this.customUserDetailsService = customUserDetailsService;
     }
+
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

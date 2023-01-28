@@ -1,8 +1,8 @@
-package edu.example.demospring.controller;
+package com.example.proiectpaw_produse.controller;
 
-import edu.example.demospring.security.UserImpl;
-import edu.example.demospring.security.jwt.JwtResponse;
-import edu.example.demospring.security.jwt.utils.Utils;
+import com.example.proiectpaw_produse.security.UserImpl;
+import com.example.proiectpaw_produse.security.jwt.JwtResponse;
+import com.example.proiectpaw_produse.security.jwt.utils.Utils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,9 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-/**
- * @author : colacristian on 11/13/22
- **/
+
 @Controller
 public class AuthController {
 

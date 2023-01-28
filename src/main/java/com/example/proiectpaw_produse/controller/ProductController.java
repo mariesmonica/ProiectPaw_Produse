@@ -1,12 +1,7 @@
-package edu.example.demospring.controller;
+package com.example.proiectpaw_produse.controller;
 
-import edu.example.demospring.exception.ProductNotFoundException;
-import edu.example.demospring.persitence.Product;
-import edu.example.demospring.repository.ProductRepository;
+import com.example.proiectpaw_produse.repository.ProductRepository;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 

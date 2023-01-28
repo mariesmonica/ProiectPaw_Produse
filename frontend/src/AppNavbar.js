@@ -21,8 +21,6 @@ export default function Navbar() {
                         >
                         <span className="navbar-toggler-icon"></span>
                     </button>
-
-                    <Link className="btn btn-outline-light" to = "/products/new">Add Products</Link>
                 </div>
             </nav>
         </div>

@@ -1,4 +1,4 @@
-package edu.example.demospring.security;
+package com.example.proiectpaw_produse.security;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;

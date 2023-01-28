@@ -1,4 +1,4 @@
-package com.example.proiectpaw_produse.persitence;
+package com.example.proiectpaw_produse.modelView;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

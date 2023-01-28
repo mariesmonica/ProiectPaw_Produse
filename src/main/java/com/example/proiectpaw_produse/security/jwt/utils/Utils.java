@@ -1,6 +1,7 @@
-package edu.example.demospring.security.jwt.utils;
+package com.example.proiectpaw_produse.security.jwt.utils;
 
-import edu.example.demospring.security.UserImpl;
+import com.example.proiectpaw_produse.security.UserImpl;
+
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;

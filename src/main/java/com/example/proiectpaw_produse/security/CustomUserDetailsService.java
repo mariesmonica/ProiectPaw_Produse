@@ -1,4 +1,4 @@
-package edu.example.demospring.security;
+package com.example.proiectpaw_produse.security;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,9 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 
-/**
- * @author : colacristian on 11/13/22
- **/
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
