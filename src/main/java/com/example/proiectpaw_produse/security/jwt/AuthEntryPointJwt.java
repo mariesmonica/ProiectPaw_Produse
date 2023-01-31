@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 @Component
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
+
     private static final Logger log = Logger.getLogger(AuthEntryPointJwt.class.getCanonicalName());
 
     @Override

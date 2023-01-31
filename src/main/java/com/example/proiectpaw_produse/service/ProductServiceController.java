@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
+@RequestMapping(path = "/Product")
 public class ProductServiceController {
     private static Map<Long, ProductDTO> productsMap = new HashMap<>();
 
@@ -38,7 +39,7 @@ public class ProductServiceController {
         this.productServiceDAO = productServiceDAO;
     }
 
-    @RequestMapping(value = "/products-view")//preia toate produsele
+    @RequestMapping(value = "/products-view",method = RequestMethod.GET)//preia toate produsele
     public ResponseEntity<Object> getProducts() {
         return new ResponseEntity<>(productRepository.findAll().stream().map(o -> new ProductDTO(o.getId(), o.getName(), o.getPrice(), o.getDetails())).collect(Collectors.toList()), HttpStatus.OK);
     }
@@ -63,7 +64,7 @@ public class ProductServiceController {
     }
 
     @RequestMapping(value = "/product-update/{id}", method = RequestMethod.PUT)//actualizeaza un produs dupa id
-    public ResponseEntity<Object> updateProduct(@PathVariable("id") Long id, @RequestBody ProductDTO productDTO) {
+    public ResponseEntity<Object> updateProduct(@PathVariable("id") long id, @RequestBody ProductDTO productDTO) {
         productRepository.findById(id).ifPresent(p -> {
             p.setName(productDTO.getName());
             p.setPrice(productDTO.getPrice());
@@ -72,6 +73,7 @@ public class ProductServiceController {
         });
         productsMap.remove(id);
         productsMap.put(id, productDTO);
+
 
         var model = new KafkaModel(id,productDTO.getName());
         kafkaTemplate.send(KafkaConstants.KAFKA_TOPIC, model);

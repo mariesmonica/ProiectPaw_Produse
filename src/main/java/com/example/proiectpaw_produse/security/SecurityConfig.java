@@ -1,80 +1,51 @@
 package com.example.proiectpaw_produse.security;
 
 import com.example.proiectpaw_produse.security.jwt.AuthEntryPointJwt;
-import com.example.proiectpaw_produse.security.jwt.AuthTokenFilter;
-
+import com.example.proiectpaw_produse.security.jwt.JwtFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(
-//        securedEnabled = true,
-//        jsr250Enabled = true,
-        prePostEnabled = true
-)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-
-    private AuthEntryPointJwt entryPointJwt;
-    private CustomUserDetailsService customUserDetailsService;
-
-    @Bean
-    public AuthTokenFilter authTokenFilter() {
-        return new AuthTokenFilter(customUserDetailsService);
-    }
-
-    public SecurityConfig(AuthEntryPointJwt entryPointJwt, CustomUserDetailsService customUserDetailsService) {
-        this.entryPointJwt = entryPointJwt;
-        this.customUserDetailsService = customUserDetailsService;
-    }
-
-    @Bean
-    public static PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(entryPointJwt).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/index").permitAll()
-                .antMatchers("/login").permitAll()
-                .anyRequest()
-                .authenticated();
-
-        http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
-    }
-
+    @Autowired
+    CustomUserDetailsService customUserDetailsService;
+    @Autowired
+    AuthEntryPointJwt authEntryPointJwt;
+    @Autowired
+    JwtFilter jwtFilter;
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService)
-                .passwordEncoder(passwordEncoder());
+        auth.userDetailsService(customUserDetailsService);
     }
 
-    @Override
     @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public JwtFilter authenticationJwtTokenFilter() {
+        return new JwtFilter();
     }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
 
+        http = http.csrf().disable().cors().and();
 
+        http = http
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and();
+        http=http.exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and();
+        http.authorizeRequests().antMatchers("/Product/**")
+                .authenticated()
+                .antMatchers("/Auth/**").permitAll()
+                .antMatchers("/index/**").permitAll();
+
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+    }
 }

@@ -3,14 +3,11 @@ import {Link, withRouter} from 'react-router-dom';
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import AppNavbar from './AppNavbar';
 
-const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNjc0OTAxNjI1LCJleHAiOjE2NzQ5ODgwMjV9.xWf_rBIqO8W96C6WxLe-tD1N5t3gyAFo0NVsI-PsAgJ2Wb00AJ63FuiHNUUtSMbr_onBlGZSMgzQkWfXv5fZQQ';
-
-//const SOCKET_URL = 'ws://localhost:8081/ws-message';
 
 class ProductEdit extends Component {
     emptyItem = {
         name: '',
-        start_price:'',
+        price:'',
         details:''
     };
 
@@ -29,65 +26,37 @@ class ProductEdit extends Component {
         const value= target.value;
 
         const name = target.name;
-        const start_price = target.start_price;
+        const price = target.price;
         const details = target.details;
 
         let item = {...this.state.item};
         item[name] = value;
-        item[start_price] = value;
+        item[price] = value;
         item[details] =value;
         this.setState({item});
     }
 
-//     let onConnected = () => {
-//         console.log("Connected!!")
-//         client.subscribe(`/product-update/${this.props.match.params.id}`, (msg) => {
-//             if (msg.body) {
-//                 const product = JSON.parse(msg.body);
-//                 console.log("Price:" + product.start_price);
-//                 console.log(product);
-//                 this.setState({item: product});
-
-//             }
-//         });
-//     }
-
-//     let onDisconnected = () => {
-//         console.log("Disconnected!!")
-//     }
-
-//     const client = new Client({
-//         brokerURL: SOCKET_URL,
-//         reconnectDelay: 5000,
-//         heartbeatIncoming: 4000,
-//         heartbeatOutgoing: 4000,
-//         onConnect: onConnected,
-//         onDisconnect: onDisconnected
-//     });
-
-//     client.activate();
-// }
 
     async handleSubmit(event) {
         event.preventDefault();
         const {item} = this.state;
 
-        await fetch(`/product-update/${this.props.match.params.id}`, {//se coneteaza la pagina product-update
+        await fetch(`/Product/product-update/${this.props.match.params.id}`, {//se conecteaza la pagina product-update
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization' :`${token}`
+                Authorization: "Bearer " + localStorage.getItem("jwt")
             },
             body: JSON.stringify(item),
         });
-        this.props.history.push('/products-view');//inapoi la lista de produse
+        this.props.history.push('/Product/products-view');//inapoi la lista de produse
     }
 
 
     render() {
         const {item} = this.state;
-        const title = <h2>{'Edit Product'}</h2>;
+        const title = <h2><center>{'Edit Product'}</center></h2>;
     
 
         return (<div>
@@ -101,9 +70,9 @@ class ProductEdit extends Component {
                                onChange={this.handleChange} autoComplete="name"/>
                     </FormGroup>
                     <FormGroup>
-                        <Label for="start_price">Price</Label>
-                        <Input type="text" name="start_price" id="start_price" value={item.start_price}
-                               onChange={this.handleChange} autoComplete="start_price"/>
+                        <Label for="price">Price</Label>
+                        <Input type="text" name="price" id="price" value={item.price}
+                               onChange={this.handleChange} autoComplete="price"/>
                     </FormGroup>
                     <FormGroup>
                         <Label for="details">Details</Label>
@@ -112,7 +81,7 @@ class ProductEdit extends Component {
                     </FormGroup>
                     <FormGroup>
                         <Button color="primary" type="submit">Save</Button>
-                        <Button color="secondary" tag={Link} to="/products-view">Cancel</Button>
+                        <Button color="secondary" tag={Link} to="/Product/products-view">Cancel</Button>
                     </FormGroup>
                 </Form>
             </Container>

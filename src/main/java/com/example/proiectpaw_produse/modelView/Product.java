@@ -21,7 +21,7 @@ public class Product implements Serializable {
         this.details = details;
     }
 
-
+    @Id
     public long getId() {
         return id;
     }
@@ -48,7 +48,7 @@ public class Product implements Serializable {
 
     public Product() {
     }
-    @Id
+
 //    @GeneratedValue(strategy = GenerationType.AUTO)
 
 

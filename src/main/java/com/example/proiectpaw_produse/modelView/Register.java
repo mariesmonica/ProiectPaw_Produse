@@ -2,9 +2,9 @@ package com.example.proiectpaw_produse.modelView;
 
 public class Register {
 
-    private String name;
-    private String user;
-    private String password;
+    public String name;
+    public String username;
+    public String password;
 
     public String getName() {
         return name;
@@ -14,12 +14,12 @@ public class Register {
         this.name = name;
     }
 
-    public String getUser() {
-        return user;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import './App.css';
 import {Component} from "react";
@@ -7,10 +6,12 @@ import ProductList from "./ProductList";
 import ProductEdit from "./ProductEdit";
 import ProductAdd from './ProductAdd';
 import Login from "./Login";
+import Register from './Register';
 
 class App extends Component {
     state = {
         products: []
+    
     };
 
     // render() {
@@ -37,10 +38,11 @@ class App extends Component {
             <Router>
                 <Switch>
                     <Route path='/' exact={true}><Home/></Route>
-                    <Route path='/my_login'><Login/></Route>
-                    <Route path='/products-view' exact={true}><ProductList/></Route>
-                    <Route path='/product-update/:id'><ProductEdit/></Route>
-                    <Route path='/product-add' exact={true}><ProductAdd/></Route>
+                    <Route path='/Auth/register'><Register/></Route>
+                    <Route path='/Auth/login'><Login/></Route>
+                    <Route path='/Product/products-view' exact={true}><ProductList/></Route>
+                    <Route path='/Product/product-update/:id'><ProductEdit/></Route>
+                    <Route path='/Product/product-add' exact={true}><ProductAdd/></Route>
                 </Switch>
             </Router>
         )

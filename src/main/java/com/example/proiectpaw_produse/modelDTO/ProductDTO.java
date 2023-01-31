@@ -1,18 +1,19 @@
 package com.example.proiectpaw_produse.modelDTO;
 
+import javax.persistence.Id;
+
 public class ProductDTO {
 
-    private Long id;
+    private long id;
     private String name;
 
     private float price;
-    private float actual_price;
     private String details;
 
     private  long user_id;
     private long buyer_id;
 
-    public ProductDTO(Long id, String name, float price, String details) {
+    public ProductDTO(long id, String name, float price, String details) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -31,12 +32,11 @@ public class ProductDTO {
     public ProductDTO() {
     }
 
-
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -48,14 +48,6 @@ public class ProductDTO {
         this.name = name;
     }
 
-
-    public float getActual_price() {
-        return actual_price;
-    }
-
-    public void setActual_price(float actual_price) {
-        this.actual_price = actual_price;
-    }
 
     public long getUser_id() {
         return user_id;

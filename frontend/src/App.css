@@ -25,7 +25,7 @@
 }
 
 .App-link {
-    color: #61dafb;
+    color: #fb61f3;
 }
 
 nav + .container, nav + .container-fluid {
@@ -46,7 +46,7 @@ nav + .container, nav + .container-fluid {
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    background: white;
+    background: rgb(143, 24, 103);
     padding: 20px;
     margin-top: 30px;
 }

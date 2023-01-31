@@ -1,31 +1,28 @@
 package com.example.proiectpaw_produse.security;
 
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.example.proiectpaw_produse.modelDTO.UserDTO;
+import com.example.proiectpaw_produse.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.Optional;
 
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final PasswordEncoder passwordEncoder;
-
-    public CustomUserDetailsService(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
-
+    @Autowired
+    UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return new UserImpl("user"
-                , passwordEncoder.encode("password"),
-                Arrays.asList(new SimpleGrantedAuthority("USER")));
-
+    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<UserDTO> user = userRepository.findByUsername(username);
+        if(user.get() == null)
+            throw new UsernameNotFoundException("User not found");
+        var userDetails = new CustomUserDetails(user.get());
+        return userDetails;
 
     }
 }

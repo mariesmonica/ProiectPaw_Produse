@@ -2,12 +2,11 @@ import {Component} from "react";
 import {Link, withRouter} from 'react-router-dom';
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import AppNavbar from './AppNavbar';
-const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNjc0OTAxNjI1LCJleHAiOjE2NzQ5ODgwMjV9.xWf_rBIqO8W96C6WxLe-tD1N5t3gyAFo0NVsI-PsAgJ2Wb00AJ63FuiHNUUtSMbr_onBlGZSMgzQkWfXv5fZQQ';
 
 class ProductAdd extends Component {
     emptyItem = {
         name: '',
-        start_price:'',
+        price:'',
         details:''
     };
 
@@ -20,7 +19,6 @@ class ProductAdd extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
-
     
 
     handleChange(event) {
@@ -28,12 +26,12 @@ class ProductAdd extends Component {
         const value= target.value;
 
         const name = target.name;
-        const start_price = target.start_price;
+        const price = target.price;
         const details = target.details;
 
         let item = {...this.state.item};
         item[name] = value;
-        item[start_price] = value;
+        item[price] = value;
         item[details] =value;
         this.setState({item});
     }
@@ -42,16 +40,16 @@ class ProductAdd extends Component {
         event.preventDefault();
         const {item} = this.state;
 
-        await fetch('/product-add', {
+        await fetch('/Product/product-add', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization' :`${token}`
+                 Authorization: "Bearer " + localStorage.getItem("jwt")
             },
             body: JSON.stringify(item),
         });
-        this.props.history.push('/products-view');//inapoi la lista de produse
+        this.props.history.push('/Product/products-view');//inapoi la lista de produse
     }
 
 
@@ -71,9 +69,9 @@ class ProductAdd extends Component {
                                onChange={this.handleChange} autoComplete="name"/>
                     </FormGroup>
                     <FormGroup>
-                        <Label for="start_price">Price</Label>
-                        <Input type="text" name="start_price" id="start_price" value={item.start_price}
-                               onChange={this.handleChange} autoComplete="start_price"/>
+                        <Label for="price">Price</Label>
+                        <Input type="text" name="price" id="price" value={item.price}
+                               onChange={this.handleChange} autoComplete="price"/>
                     </FormGroup>
                     <FormGroup>
                         <Label for="details">Details</Label>
@@ -82,16 +80,12 @@ class ProductAdd extends Component {
                     </FormGroup>
                     <FormGroup>
                         <Button color="primary" type="submit">Save</Button>
-                        <Button color="secondary" tag={Link} to="/products-view">Cancel</Button>
+                        <Button color="secondary" tag={Link} to="/Product/products-view">Cancel</Button>
                     </FormGroup>
                 </Form>
             </Container>
         </div>)
     }
-
-   
-
-
 }
 
 export default withRouter(ProductAdd);
