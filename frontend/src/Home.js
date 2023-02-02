@@ -11,7 +11,7 @@ class Home extends Component {
         return (<div>
                 <AppNavbar/>
                 <Container fluid>
-                    <Button color="link"><Link to="/Product/products-view">Products</Link> </Button>
+                    <Button color="link"><Link to="/Auth/login">Products</Link> </Button>
                 </Container>
             </div>
         );

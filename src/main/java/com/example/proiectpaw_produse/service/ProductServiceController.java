@@ -41,7 +41,7 @@ public class ProductServiceController {
 
     @RequestMapping(value = "/products-view",method = RequestMethod.GET)//preia toate produsele
     public ResponseEntity<Object> getProducts() {
-        return new ResponseEntity<>(productRepository.findAll().stream().map(o -> new ProductDTO(o.getId(), o.getName(), o.getPrice(), o.getDetails())).collect(Collectors.toList()), HttpStatus.OK);
+        return new ResponseEntity<>(productRepository.findAll().stream().map(o -> new ProductDTO(o.getId(), o.getName(), o.getPrice(), o.getDetails(), o.getId_user())).collect(Collectors.toList()), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/product-add", method = RequestMethod.POST)//adauga un produs
@@ -51,6 +51,7 @@ public class ProductServiceController {
         product.setName(productDTO.getName());
         product.setPrice(productDTO.getPrice());
         product.setDetails(productDTO.getDetails());
+        product.setId_user(productDTO.getId_user());
         productRepository.save(product);
 
 
@@ -60,7 +61,7 @@ public class ProductServiceController {
     @RequestMapping(value = "/product-view/{id}", method = RequestMethod.GET)//vizualizeaza produsul dupa id
     public ResponseEntity<Object> getProduct(@PathVariable("id") Long id) {
         return new ResponseEntity<>(productRepository.findById(id).map(p ->
-                new ProductDTO(p.getId(), p.getName(), p.getPrice(), p.getDetails())).orElseThrow(), HttpStatus.OK);
+                new ProductDTO(p.getId(), p.getName(), p.getPrice(), p.getDetails(), p.getId_user())).orElseThrow(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/product-update/{id}", method = RequestMethod.PUT)//actualizeaza un produs dupa id

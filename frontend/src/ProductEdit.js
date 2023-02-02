@@ -2,7 +2,8 @@ import {Component} from "react";
 import {Link, withRouter} from 'react-router-dom';
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import AppNavbar from './AppNavbar';
-
+import axios from "axios";
+import jwt_decode from "jwt-decode";
 
 class ProductEdit extends Component {
     emptyItem = {
@@ -11,6 +12,7 @@ class ProductEdit extends Component {
         details:''
     };
 
+    idproduct = '';
 
     constructor(props) {
         super(props);
@@ -19,6 +21,24 @@ class ProductEdit extends Component {
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    async componentDidMount() {
+        console.log(this.props);
+        if (this.props.match.params.id !== null) {
+            const product = await (await fetch(`/Product/product-update/${this.props.match.params.id}`)).json();
+            this.setState({ item: product });
+
+            axios.get(`/Product/product-view/${this.props.match.params.id}`, { 
+                headers: { 
+                    Authorization: "Bearer " + localStorage.getItem("jwt") 
+                } 
+            })
+                .then(response => {
+                    
+                    this.setState({idproduct: response.data.id_user,});
+                });
+        }
     }
 
     handleChange(event) {
@@ -39,7 +59,11 @@ class ProductEdit extends Component {
 
     async handleSubmit(event) {
         event.preventDefault();
-        const {item} = this.state;
+        const {item,idproduct} = this.state;
+        const decoded = jwt_decode(localStorage.getItem("jwt"))
+        console.log(decoded.Id);
+        console.log(idproduct);
+        if(decoded.Id===idproduct){
 
         await fetch(`/Product/product-update/${this.props.match.params.id}`, {//se conecteaza la pagina product-update
             method: 'PUT',
@@ -52,8 +76,10 @@ class ProductEdit extends Component {
         });
         this.props.history.push('/Product/products-view');//inapoi la lista de produse
     }
-
-
+    else {
+        alert("User-ul nu poate efectua editarea")
+    }
+}
     render() {
         const {item} = this.state;
         const title = <h2><center>{'Edit Product'}</center></h2>;
@@ -88,5 +114,4 @@ class ProductEdit extends Component {
         </div>)
     }
 }
-
 export default withRouter(ProductEdit);

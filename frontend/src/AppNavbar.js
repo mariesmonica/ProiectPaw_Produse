@@ -1,30 +1,39 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
-export default function Navbar() {
-    return (
-        <div>
-            <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                <div className="navbar-brand mb-0 h1">
-                    <Link className="navbar-brand" width="100" height="100" to="/">
-                        Licitatii-Publice
-                        {/* <img src="licitatii_publice.png" width="100" height="100" to="/"></img> */}
-                    </Link>
+export default class Navbar extends Component {
 
-                    <button
-                        className="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation"
+    constructor(props) {
+        super(props);
+        this.state = { isOpen: false };
+        this.toggle = this.toggle.bind(this);
+    }
 
-                    >
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
-                </div>
-            </nav>
-        </div>
-    )
+    toggle() {
+        this.setState({ isOpen: !this.state.isOpen })
+    }
+
+    render() {
+        return (
+            <div>
+                <nav className="navbar navbar-expand-lg navbar-light bg-light">
+                    <div className="navbar-brand mb-0 h1" >
+
+                        <Link align="center" className="navbar-brand" width="100" height="100" to="/">
+                            Licitatii-Publice
+                        </Link>
+                        <a align="center" className="navbar-brand" ><img src="../licitatii_publice.png" width="100" height="100" to="/Product/"></img></a>
+                    </div>
+
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                   
+                        <a> <Link  className="btn btn-outline-success" to="/Auth/login"  >Sign in</Link></a>
+                    </div>
+
+                </nav>
+            </div>
+        )
+    }
 }
+

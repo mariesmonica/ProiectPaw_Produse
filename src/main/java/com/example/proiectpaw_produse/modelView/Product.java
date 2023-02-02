@@ -14,11 +14,14 @@ public class Product implements Serializable {
     private float price;
     private String details;
 
-    public Product(long id, String name, float price, String details) {
+    private long id_user;
+
+    public Product(long id, String name, float price, String details, long id_user) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.details = details;
+        this.id_user = id_user;
     }
 
     @Id
@@ -58,5 +61,13 @@ public class Product implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public long getId_user() {
+        return id_user;
+    }
+
+    public void setId_user(long id_user) {
+        this.id_user = id_user;
     }
 }

@@ -2,14 +2,15 @@ import {Component} from "react";
 import {Link, withRouter} from 'react-router-dom';
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import AppNavbar from './AppNavbar';
+import jwt_decode from "jwt-decode";
 
 class ProductAdd extends Component {
     emptyItem = {
         name: '',
         price:'',
-        details:''
+        details:'',
+        id_user:''
     };
-
 
     constructor(props) {
         super(props);
@@ -28,18 +29,22 @@ class ProductAdd extends Component {
         const name = target.name;
         const price = target.price;
         const details = target.details;
+        const id_user = target.id_user;
 
         let item = {...this.state.item};
         item[name] = value;
         item[price] = value;
         item[details] =value;
+        item[id_user] =value;
         this.setState({item});
+
+       
     }
 
     async handleSubmit(event) {
         event.preventDefault();
         const {item} = this.state;
-
+        console.log(item)
         await fetch('/Product/product-add', {
             method: 'POST',
             headers: {
@@ -55,8 +60,10 @@ class ProductAdd extends Component {
 
     render() {
         const {item} = this.state;
-        const title = <h2>{'Add Product'}</h2>;
-    
+        const title = <h2><center>{'Add Product'}</center></h2>;
+        
+        const decoded = jwt_decode(localStorage.getItem("jwt"));
+        item.id_user = decoded.Id;
 
         return (<div>
             <AppNavbar/>

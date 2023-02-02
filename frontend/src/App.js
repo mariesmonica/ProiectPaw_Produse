@@ -7,6 +7,8 @@ import ProductEdit from "./ProductEdit";
 import ProductAdd from './ProductAdd';
 import Login from "./Login";
 import Register from './Register';
+import ProductDetails from './ProductDetails';
+
 
 class App extends Component {
     state = {
@@ -43,6 +45,7 @@ class App extends Component {
                     <Route path='/Product/products-view' exact={true}><ProductList/></Route>
                     <Route path='/Product/product-update/:id'><ProductEdit/></Route>
                     <Route path='/Product/product-add' exact={true}><ProductAdd/></Route>
+                    <Route path='/Product/product-view/:id'><ProductDetails/></Route>
                 </Switch>
             </Router>
         )

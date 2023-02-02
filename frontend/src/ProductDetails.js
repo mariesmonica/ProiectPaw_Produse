@@ -1,273 +1,153 @@
-import {Component} from "react";
-import {Link, withRouter} from 'react-router-dom';
-import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
-import "./App.css";
-import AppNavbar from "./AppNavbar";
-import "./product_page.css";
-import {Client} from "@stomp/stompjs";
-import img from "./public.rochie.png";
+import { Component } from "react";
+import { Button, ButtonGroup, Container, Table, Form, FormGroup, Input, Label } from 'reactstrap';
+import AppNavbar from './AppNavbar';
+import { Link, withRouter } from 'react-router-dom';
+import axios from "axios";
+import jwt_decode from "jwt-decode";
 
-const SOCKET_URL = 'ws://localhost:8080/ws-message';
+class ProductDetails extends Component {
 
-class Productdetails extends Component{
     emptyItem = {
-        bid:'',
+        name: '',
+        price: '',
+        details: ''
     };
 
     constructor(props) {
         super(props);
         this.state = {
-            product: [],
-            products: [],
-            messages: '',
+            product: {},
             item: this.emptyItem
-        }
+        };
+
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     async componentDidMount() {
-        const {id} = this.props.match.params;
-        fetch(`/products_page/${id}`)
-            .then(response => response.json())
-            .then(data => this.setState({product:data}));
+        if (this.props.match.params.id !== null)
+            axios.get(`/Product/product-view/${this.props.match.params.id}`, { 
+                headers:
+                { 
+                    Authorization: "Bearer " + localStorage.getItem("jwt") 
+                } 
+            })
+                .then(response => {
+        
+                    this.setState({
+                        product: response.data,
+                        item: {
+                            name: response.data.name,
+                           
+                            details: response.data.details
+                        }
+                    });
+                });
+    }
 
-        let currentComponent = this;
-
-        let onConnected = () => {
-            console.log("Connected!!")
-            client.subscribe('/topic/message', function (msg) {
-                if (msg.body) {
-                    let jsonBody = JSON.parse(msg.body);
-                    if (jsonBody.message) {
-                        currentComponent.setState({ messages: jsonBody.message })
-                    }
-                }
-            });
-        }
-
-        let onDisconnected = () => {
-            console.log("Disconnected!!")
-        }
-
-        const client = new Client({
-            brokerURL: SOCKET_URL,
-            reconnectDelay: 1000,
-            heartbeatIncoming: 1000,
-            heartbeatOutgoing: 1000,
-            onConnect: onConnected,
-            onDisconnect: onDisconnected
-        });
-
-        client.activate();
+    async pageUpdate() {
+        if (this.props.match.params.id !== null)
+            axios.get(`/Product/product-view/${this.props.match.params.id}`, { headers: { Authorization: "Bearer " + localStorage.getItem("jwt") } })
+                .then(response => {
+                    
+                    this.setState({
+                        product: response.data,
+                        item: {
+                            name: response.data.name,
+                            details: response.data.details
+                        }
+                    });
+                });
     }
 
     handleChange(event) {
         const target = event.target;
         const value = target.value;
-        const name = target.name;
-        let item = {...this.state.item};
-        item[name] = value;
-        this.setState({item});
+
+        let item = { ...this.state.item };
+        item["price"] = value;
+
+        this.setState({ item });
+
     }
 
     async handleSubmit(event) {
         event.preventDefault();
-        const {item} = this.state;
-        const { product } = this.state;
-        const { id } = this.props.match.params;
+        const { item, product } = this.state;
+        const decoded = jwt_decode(localStorage.getItem("jwt"));
+        
 
-        if(parseInt(item.bid)<parseInt(product.price)){
-            alert("Bid a higher price!");
-        }else{
-            await fetch(`/products/${id}`, {
+        if (decoded.Id !== product.id_user && product.price < item.price) {
+            await fetch(`/Product/product-update/${this.props.match.params.id}`, {
                 method: 'PUT',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-
+                    Authorization: "Bearer " + localStorage.getItem("jwt")
                 },
-                body: JSON.stringify({price: item.bid})
+                body: JSON.stringify(item),
             });
+            this.props.history.push('/Product/product-view/' + this.props.match.params.id);
+        } else if (decoded.Id === product.id_user) {
+            alert("Nu se poate efectua licitarea");
+        } else {
+            alert("Se cere un pret mai mare");
         }
-
-        console.log("Update done!");
-
-        fetch(`/products_page/${id}`)
-            .then(response => response.json())
-            .then(data => this.setState({product:data}));
-        console.log("bid: "+item.bid);
-        console.log("product price: "+product.price);
-        if(parseInt(item.bid)>parseInt(product.price)){
-            fetch('http://localhost:8080/send', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({price:item.bid}),
-            }).then((response)=>response.text());
-        }
-
-        console.log(this.state.messages);
+        this.pageUpdate()
     }
-
 
     render() {
-        const {product} = this.state;
-        const {item} = this.state;
-        if (this.state.messages) {
-            return (
-                <html>
-                <head>
-                    <meta charSet="utf-8"/>
-                    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-                    <title>Product Card/Page</title>
-                    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                    <link rel="stylesheet" href="style.css"/>
-                    <link rel="stylesheet"
-                          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-                          integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
-                          crossOrigin="anonymous"/>
-                </head>
-                <body>
-
-                <AppNavbar/>
-                <div className="card-wrapper">
-                    <div className="card">
-
-                        <div className="product-imgs">
-                            <div className="img-display">
-                                <div className="img-showcase">
-                                    <img src={img} alt="image"/>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="product-content">
-                            <h2 className="product-title">{product.name}</h2>
-
-                            <div className="product-date">
-                                <h2>Date initial </h2>
-                                <p>{product.initial_date}</p>
-
-                            </div>
-
-                            <div className="product-date">
-                                <h2>Date final </h2>
-                                <p>{product.final_date}</p>
-                            </div>
-
-
-                            <div className="product-price">
-                                <p className="new-price">Price: <span>{this.state.messages}</span></p>
-                            </div>
-
-                            <div className="product-detail">
-                                <h2>product description</h2>
-                                <p>{product.details}</p>
-
-                            </div>
-
-                            <Form onSubmit={this.handleSubmit}>
-                                <FormGroup>
-
-                                    <Input type="text" name="bid" id="bid" value={item.bid}
-                                           onChange={this.handleChange} autoComplete="price"/>
-                                </FormGroup>
-                                <FormGroup>
-                                    <Button className="button-offer" type="submit">Add the offer</Button>
-
-                                </FormGroup>
-                            </Form>
-
-
-                        </div>
-                    </div>
-                </div>
-
-                </body>
-                </html>
-
-            )
+        const { item } = this.state;
+        const { product, isLoading } = this.state;
+        if (isLoading) {
+            return <p>Loading...</p>
         }
-        else {
-            return(
-                <html>
-                <head>
-                    <meta charSet="utf-8"/>
-                    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-                    <title>Product Card/Page</title>
-                    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                    <link rel="stylesheet" href="style.css"/>
-                    <link rel="stylesheet"
-                          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-                          integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
-                          crossOrigin="anonymous"/>
-                </head>
-                <body>
+        //console.log(product);
+        console.log(item.price);
 
-                <AppNavbar/>
-                <div className="card-wrapper">
-                    <div className="card">
+        return (
+            <div>
+                <AppNavbar />
+                <h2>Product details</h2>
+                <Container fluid>
+                        
+                        <Table className="">
+                            <thead>
+                                <tr>
+                                    <th width="10%">Name</th>
+                                    <th width="10%">Price</th>
+                                    <div><th width="30%">Details</th></div>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr key={product.id}>
+                                    <td style={{ whiteSpace: 'nowrap' }}>{product.name}</td>
+                                    <td style={{ whiteSpace: 'nowrap' }}>{product.price} </td>
+                                    <div>
+                                      <td style={{ whiteSpace: 'nowrap' }}>{product.details}</td>
+                                    </div>
 
-                        <div className="product-imgs">
-                            <div className="img-display">
-                                <div className="img-showcase">
-                                    <img src={img} alt="image"/>
-                                </div>
-                            </div>
-                        </div>
+                                </tr>
+                            </tbody>
+                        </Table>
 
-                        <div className="product-content">
-                            <h2 className="product-title">{product.name}</h2>
-
-                            <div className="product-date">
-                                <h2>Date initial </h2>
-                                <p>{product.initial_date}</p>
-                            </div>
-
-                            <div className="product-date">
-                                <h2>Date final </h2>
-                                <p>{product.final_date}</p>
-
-                            </div>
-
-                            <div className="product-price">
-                                <p className="new-price">Price: <span>{product.price}</span></p>
-                            </div>
-
-                            <div className="product-detail">
-                                <h2>product description </h2>
-                                <p>{product.details}</p>
-
-                            </div>
-
+                       
                             <Form onSubmit={this.handleSubmit}>
                                 <FormGroup>
-
-                                    <Input type="text"
-                                           name="bid"
-                                           id="bid"
-                                           value={item.bid}
-                                           onChange={this.handleChange}
-                                           autoComplete="price"/>
-                                </FormGroup>
-                                <FormGroup className="formButton">
-                                    <Button className="button-offer" type="submit">Add the offer</Button>
-
+                                    <Label for="price">Your price bid:</Label>
+                                    <Input type="text" name="price" id="price" value={item.price}
+                                        onChange={this.handleChange} autoComplete="price" />
+                                
+                                        <Button color="btn btn-info" type="submit">Bid</Button>
+                                    
                                 </FormGroup>
                             </Form>
-
-                        </div>
-                    </div>
-                </div>
-
-                </body>
-                </html>
-
-            )}
+                        
+                    
+                </Container>
+            </div>
+        );
     }
-
 }
+
 export default withRouter(ProductDetails);
